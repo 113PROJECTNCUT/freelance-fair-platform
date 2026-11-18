@@ -4,6 +4,10 @@ import Review from './pages/Review.jsx'
 import PostJob from './pages/PostJob.jsx'
 import Freelancers from './pages/Freelancers.jsx'
 import Milestones from './pages/Milestones.jsx'
+import Login from './pages/Login.jsx'
+import Register from './pages/Register.jsx'
+import Account from './pages/Account.jsx'
+import { ROLE_LABEL, useAuth } from './auth/AuthContext.jsx'
 
 const NAV = [
   ['/', '首頁'],
@@ -12,6 +16,22 @@ const NAV = [
   ['/review', '雙向合約健檢'],
   ['/milestones', '里程碑託管'],
 ]
+
+function UserMenu() {
+  const { user } = useAuth()
+  if (user) {
+    return (
+      <NavLink to="/account" className="user-chip" title="我的帳號">
+        {user.displayName}<small>{ROLE_LABEL[user.role]}</small>
+      </NavLink>
+    )
+  }
+  return (
+    <NavLink to="/login" className={({ isActive }) => `login-link${isActive ? ' active' : ''}`}>
+      登入／註冊
+    </NavLink>
+  )
+}
 
 export default function App() {
   return (
@@ -28,6 +48,7 @@ export default function App() {
               </NavLink>
             ))}
           </nav>
+          <UserMenu />
         </div>
       </header>
       <div className="demo-banner">
@@ -40,6 +61,9 @@ export default function App() {
           <Route path="/freelancers" element={<Freelancers />} />
           <Route path="/review" element={<Review />} />
           <Route path="/milestones" element={<Milestones />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/account" element={<Account />} />
           <Route path="*" element={<Home />} />
         </Routes>
       </main>

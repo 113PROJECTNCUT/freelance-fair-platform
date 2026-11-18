@@ -5,4 +5,8 @@ import { defineConfig } from 'vite'
 export default defineConfig({
   plugins: [react()],
   base: './',
+  // 本機開發：前端 /api 轉給 Spring Boot（localhost:8080），不必處理 CORS
+  server: {
+    proxy: { '/api': 'http://localhost:8080' },
+  },
 })

@@ -29,3 +29,18 @@ jobs:
         with:
           name: surefire-reports
           path: server/target/surefire-reports
+      - name: 實際啟動後端並跑一次註冊→登入→取得自己
+        run: |
+          mvn -B -ntp -q -DskipTests package
+          java -jar target/freelance-fair-server-0.1.0.jar > app.log 2>&1 &
+          for i in $(seq 1 30); do curl -sf localhost:8080/api/health && break; sleep 2; done
+          set -x
+          curl -sf -X POST localhost:8080/api/auth/register -H 'Content-Type: application/json' \
+            -d '{"email":"demo@example.com","password":"secret123","displayName":"示範接案者","role":"FREELANCER"}'
+          TOKEN=$(curl -sf -X POST localhost:8080/api/auth/login -H 'Content-Type: application/json' \
+            -d '{"email":"demo@example.com","password":"secret123"}' | jq -r .token)
+          curl -sf localhost:8080/api/auth/me -H "Authorization: Bearer $TOKEN" | jq -e '.role == "FREELANCER"'
+          test "$(curl -s -o /dev/null -w '%{http_code}' localhost:8080/api/auth/me)" = 401
+      - name: 啟動失敗時印出 log
+        if: failure()
+        run: cat app.log || true
