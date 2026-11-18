@@ -1,0 +1,27 @@
+# 預設（dev）：H2 記憶體資料庫，只要有 JDK 就能啟動；重開後資料會清空
+spring:
+  application:
+    name: freelance-fair-server
+  datasource:
+    url: jdbc:h2:mem:fairgig;MODE=MySQL;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+server:
+  port: 8080
+
+app:
+  jwt:
+    # 開發用預設金鑰；正式環境請用環境變數 JWT_SECRET（至少 32 字元）
+    secret: ${JWT_SECRET:dev-only-secret-please-change-0123456789abcdef}
+    expiration-minutes: 120
+  cors:
+    allowed-origins: ${CORS_ORIGINS:http://localhost:5173,https://s845taiwan.github.io}
