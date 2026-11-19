@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import tw.freelancefair.common.ApiException;
 import tw.freelancefair.job.dto.CreateJobRequest;
 import tw.freelancefair.job.dto.JobResponse;
-import tw.freelancefair.user.Role;
 import tw.freelancefair.user.User;
 import tw.freelancefair.user.UserRepository;
 
@@ -30,11 +29,9 @@ public class JobService {
 
     @Transactional
     public JobResponse create(Long userId, CreateJobRequest req) {
+        // 任何會員都能刊登，刊登者就是這個案件的發案方
         User client = users.findById(userId)
                 .orElseThrow(() -> new ApiException(HttpStatus.UNAUTHORIZED, "請先登入"));
-        if (client.getRole() != Role.CLIENT) {
-            throw new ApiException(HttpStatus.FORBIDDEN, "只有發案方可以刊登案件");
-        }
         if (req.budgetMin() > req.budgetMax()) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "預算上限不可低於下限", "budgetMax");
         }

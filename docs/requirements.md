@@ -12,7 +12,7 @@
 | V3 | 可查看接案者的公開檔案與作品集 | 🟡 | `/freelancers`（假資料） |
 | V4 | 可查詢接案者 | 🟡 | `/freelancers`（假資料） |
 | V5 | 可查看平台與 AI 合約風險審查的功能介紹 | 🟡 | 首頁 |
-| V6 | 可註冊成為會員（接案者或發案方） | ✅ | `POST /api/auth/register` |
+| V6 | 可註冊成為會員（接案者或發案方） | ✅ | `POST /api/auth/register`（改為不選身分，見 `unify-member-role`） |
 | V7 | 可利用註冊的帳號密碼登入平台 | ✅ | `POST /api/auth/login` |
 
 ## 接案者

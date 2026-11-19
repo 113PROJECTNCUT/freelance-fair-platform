@@ -79,11 +79,11 @@ GitHub Actions 的 **Cloud smoke test** 每天會實際呼叫雲端後端檢查�
 
 | API | 說明 |
 |---|---|
-| `POST /api/auth/register` | 註冊：`{email, password, displayName, role}`，role 為 `FREELANCER` 或 `CLIENT` |
+| `POST /api/auth/register` | 註冊：`{email, password, displayName}`，不選身分，同一帳號可發案也可接案 |
 | `POST /api/auth/login` | 登入：回傳 `{token, user}` |
 | `GET /api/auth/me` | 帶 `Authorization: Bearer <token>`，回傳自己的資料 |
 | `GET /api/health` | 後端是否啟動 |
-| `POST /api/jobs` | 刊登案件（限發案方，需登入） |
+| `POST /api/jobs` | 刊登案件（需登入，刊登者即該案發案方） |
 | `GET /api/jobs` | 公開案件列表，可帶 `category`、`keyword`、`minBudget`、`maxBudget` |
 | `GET /api/jobs/{id}` | 案件詳情 |
 | `GET /api/me/jobs` | 我刊登的案件 |

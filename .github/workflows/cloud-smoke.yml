@@ -31,8 +31,8 @@ jobs:
           set -x
           N=$(date +%s)
           curl -sf -X POST "$API/api/auth/register" -H 'Content-Type: application/json' \
-            -d "{\"email\":\"smoke$N@example.com\",\"password\":\"smoke12345\",\"displayName\":\"CI 測試\",\"role\":\"CLIENT\"}"
+            -d "{\"email\":\"smoke$N@example.com\",\"password\":\"smoke12345\",\"displayName\":\"CI 測試\"}"
           TOKEN=$(curl -sf -X POST "$API/api/auth/login" -H 'Content-Type: application/json' \
             -d "{\"email\":\"smoke$N@example.com\",\"password\":\"smoke12345\"}" | jq -r .token)
-          curl -sf "$API/api/auth/me" -H "Authorization: Bearer $TOKEN" | jq -e '.role == "CLIENT"'
+          curl -sf "$API/api/auth/me" -H "Authorization: Bearer $TOKEN" | jq -e '.role == "MEMBER"'
           curl -sf "$API/api/jobs" | jq -e 'type == "array"'

@@ -33,21 +33,19 @@ class JobControllerTest {
     @Autowired ObjectMapper json;
 
     String clientToken;
-    String freelancerToken;
     /** 每個測試的標題都帶這個字串，查詢時不會撞到別的測試建立的案件 */
     String tag;
 
     @BeforeEach
     void setUp() throws Exception {
-        clientToken = signUp("CLIENT");
-        freelancerToken = signUp("FREELANCER");
+        clientToken = signUp();
         tag = UUID.randomUUID().toString().substring(0, 6);
     }
 
-    private String signUp(String role) throws Exception {
-        String email = role.toLowerCase() + UUID.randomUUID().toString().substring(0, 8) + "@example.com";
+    private String signUp() throws Exception {
+        String email = "m" + UUID.randomUUID().toString().substring(0, 8) + "@example.com";
         mvc.perform(post("/api/auth/register").contentType(MediaType.APPLICATION_JSON).content(json.writeValueAsString(
-                Map.of("email", email, "password", "secret123", "displayName", "測試" + role, "role", role))))
+                Map.of("email", email, "password", "secret123", "displayName", "測試會員"))))
                 .andExpect(status().isCreated());
         String res = mvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON)
                         .content(json.writeValueAsString(Map.of("email", email, "password", "secret123"))))
@@ -79,20 +77,15 @@ class JobControllerTest {
     // ── Requirement: 刊登案件 ──
 
     @Test
-    void 發案方刊登成功() throws Exception {
+    void 會員刊登成功() throws Exception {
         postJob(clientToken, validJob())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").isNumber())
                 .andExpect(jsonPath("$.status").value("OPEN"))
-                .andExpect(jsonPath("$.client.displayName").value("測試CLIENT"))
+                .andExpect(jsonPath("$.client.displayName").value("測試會員"))
                 .andExpect(jsonPath("$.client.email").doesNotExist())
                 .andExpect(jsonPath("$.acceptanceCriteria[0]").value("支援手機與桌機瀏覽"))
                 .andExpect(jsonPath("$.acceptanceCriteria[1]").value("交付原始碼與部署說明"));
-    }
-
-    @Test
-    void 接案者不能刊登_403() throws Exception {
-        postJob(freelancerToken, validJob()).andExpect(status().isForbidden());
     }
 
     @Test
@@ -206,7 +199,7 @@ class JobControllerTest {
     @Test
     void 我的案件只回自己的() throws Exception {
         postJob(clientToken, validJob());
-        String otherClient = signUp("CLIENT");
+        String otherClient = signUp();
         var others = validJob();
         others.put("title", "別人的案件 " + tag);
         postJob(otherClient, others);

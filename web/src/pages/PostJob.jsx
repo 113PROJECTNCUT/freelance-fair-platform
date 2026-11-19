@@ -30,7 +30,7 @@ export default function PostJob() {
   const [published, setPublished] = useState(null)
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.type === 'checkbox' ? e.target.checked : e.target.value })
 
-  const canPublish = backend === 'up' && user?.role === 'CLIENT'
+  const canPublish = backend === 'up' && Boolean(user)
 
   const generate = () => {
     const list = generateChecklist({ description: form.description, days: '', revisions: form.revisionLimit })
@@ -93,8 +93,7 @@ export default function PostJob() {
       <h1 className="page-title">刊登案件</h1>
       <p className="page-sub">寫清楚預算、修改次數與權利歸屬，系統幫你把需求轉成驗收清單，簽約前先跟接案者對齊。</p>
       {backend === 'down' && <div className="notice warn">目前連不到伺服器：可以試用驗收清單產生，但無法正式刊登。</div>}
-      {backend === 'up' && !user && <div className="notice warn">要正式刊登，請先 <Link to="/login">以發案方身分登入</Link>。</div>}
-      {backend === 'up' && user && user.role !== 'CLIENT' && <div className="notice warn">你目前是接案者帳號，只有發案方可以刊登案件。</div>}
+      {backend === 'up' && !user && <div className="notice warn">要正式刊登，請先 <Link to="/login">登入</Link>。</div>}
 
       <div className="grid two">
         <section className="card">
@@ -164,7 +163,7 @@ export default function PostJob() {
                 </div>
               ) : (
                 <button className="btn primary block" onClick={publish} disabled={!canPublish || busy}>
-                  {busy ? '刊登中…' : canPublish ? '確認清單並刊登' : '需以發案方登入才能刊登'}
+                  {busy ? '刊登中…' : canPublish ? '確認清單並刊登' : '登入後才能刊登'}
                 </button>
               )}
             </>

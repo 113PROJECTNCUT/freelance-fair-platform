@@ -11,7 +11,6 @@ import tw.freelancefair.auth.dto.RegisterRequest;
 import tw.freelancefair.auth.dto.UserResponse;
 import tw.freelancefair.common.ApiException;
 import tw.freelancefair.security.JwtService;
-import tw.freelancefair.user.Role;
 import tw.freelancefair.user.User;
 import tw.freelancefair.user.UserRepository;
 
@@ -33,14 +32,11 @@ public class AuthService {
 
     @Transactional
     public UserResponse register(RegisterRequest req) {
-        if (req.role() == Role.ADMIN) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, "只能註冊為接案者或發案方", "role");
-        }
         String email = normalize(req.email());
         if (users.existsByEmail(email)) {
             throw new ApiException(HttpStatus.CONFLICT, "此 Email 已被註冊", "email");
         }
-        User user = new User(email, passwordEncoder.encode(req.password()), req.displayName().trim(), req.role());
+        User user = new User(email, passwordEncoder.encode(req.password()), req.displayName().trim());
         return UserResponse.from(users.save(user));
     }
 

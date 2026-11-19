@@ -34,10 +34,18 @@ class AuthControllerTest {
         return "u" + UUID.randomUUID().toString().substring(0, 8) + "@example.com";
     }
 
-    private ResultActions register(String email, String password, String name, String role) throws Exception {
-        String body = json.writeValueAsString(new java.util.LinkedHashMap<String, String>() {{
-            put("email", email); put("password", password); put("displayName", name); put("role", role);
-        }});
+    private ResultActions register(String email, String password, String name) throws Exception {
+        return register(email, password, name, null);
+    }
+
+    /** extraRole：測試夾帶 role 欄位時用，正常註冊不需要 */
+    private ResultActions register(String email, String password, String name, String extraRole) throws Exception {
+        var map = new java.util.LinkedHashMap<String, String>();
+        map.put("email", email);
+        map.put("password", password);
+        map.put("displayName", name);
+        if (extraRole != null) map.put("role", extraRole);
+        String body = json.writeValueAsString(map);
         return mvc.perform(post("/api/auth/register").contentType(MediaType.APPLICATION_JSON).content(body));
     }
 
@@ -49,14 +57,14 @@ class AuthControllerTest {
     // ── Requirement: 註冊 ──
 
     @Test
-    void 註冊成功_回201且不含密碼() throws Exception {
+    void 註冊成功_不需選身分_角色為MEMBER() throws Exception {
         String email = uniqueEmail();
-        register(email, "secret123", "林小安", "FREELANCER")
+        register(email, "secret123", "林小安")
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").isNumber())
                 .andExpect(jsonPath("$.email").value(email))
                 .andExpect(jsonPath("$.displayName").value("林小安"))
-                .andExpect(jsonPath("$.role").value("FREELANCER"))
+                .andExpect(jsonPath("$.role").value("MEMBER"))
                 .andExpect(jsonPath("$.password").doesNotExist())
                 .andExpect(jsonPath("$.passwordHash").doesNotExist());
     }
@@ -64,36 +72,33 @@ class AuthControllerTest {
     @Test
     void Email重複_回409() throws Exception {
         String email = uniqueEmail();
-        register(email, "secret123", "甲", "CLIENT").andExpect(status().isCreated());
-        register(email.toUpperCase(), "secret123", "乙", "CLIENT")
+        register(email, "secret123", "甲").andExpect(status().isCreated());
+        register(email.toUpperCase(), "secret123", "乙")
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.message").value("此 Email 已被註冊"));
     }
 
     @Test
-    void 不允許註冊為管理員_回400() throws Exception {
+    void 夾帶ADMIN仍是一般會員() throws Exception {
         String email = uniqueEmail();
-        register(email, "secret123", "壞人", "ADMIN").andExpect(status().isBadRequest());
-        assertThat(users.existsByEmail(email)).isFalse();
-    }
-
-    @Test
-    void 未知角色_回400() throws Exception {
-        register(uniqueEmail(), "secret123", "某人", "BOSS").andExpect(status().isBadRequest());
+        register(email, "secret123", "壞人", "ADMIN")
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.role").value("MEMBER"));
+        assertThat(users.findByEmail(email).orElseThrow().getRole()).isEqualTo(tw.freelancefair.user.Role.MEMBER);
     }
 
     // ── Requirement: 輸入驗證 ──
 
     @Test
     void 密碼太弱_回400並指出password() throws Exception {
-        register(uniqueEmail(), "abc", "某人", "FREELANCER")
+        register(uniqueEmail(), "abc", "某人")
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errors[0].field").value("password"));
     }
 
     @Test
     void Email格式錯誤_回400() throws Exception {
-        register("not-an-email", "secret123", "某人", "FREELANCER")
+        register("not-an-email", "secret123", "某人")
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errors[0].field").value("email"));
     }
@@ -103,7 +108,7 @@ class AuthControllerTest {
     @Test
     void 資料庫不存明文密碼() throws Exception {
         String email = uniqueEmail();
-        register(email, "secret123", "某人", "CLIENT").andExpect(status().isCreated());
+        register(email, "secret123", "某人").andExpect(status().isCreated());
         User saved = users.findByEmail(email).orElseThrow();
         assertThat(saved.getPasswordHash()).isNotEqualTo("secret123");
         assertThat(encoder.matches("secret123", saved.getPasswordHash())).isTrue();
@@ -114,7 +119,7 @@ class AuthControllerTest {
     @Test
     void 登入成功_回token與使用者() throws Exception {
         String email = uniqueEmail();
-        register(email, "secret123", "某人", "CLIENT");
+        register(email, "secret123", "某人");
         login(email, "secret123")
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token").isString())
@@ -124,7 +129,7 @@ class AuthControllerTest {
     @Test
     void 密碼錯誤與帳號不存在_回相同401訊息() throws Exception {
         String email = uniqueEmail();
-        register(email, "secret123", "某人", "CLIENT");
+        register(email, "secret123", "某人");
         login(email, "wrong9999")
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.message").value("Email 或密碼錯誤"));
@@ -138,13 +143,13 @@ class AuthControllerTest {
     @Test
     void 帶有效token_回200與自己的資料() throws Exception {
         String email = uniqueEmail();
-        register(email, "secret123", "某人", "FREELANCER");
+        register(email, "secret123", "某人");
         String res = login(email, "secret123").andReturn().getResponse().getContentAsString();
         JsonNode node = json.readTree(res);
         mvc.perform(get("/api/auth/me").header("Authorization", "Bearer " + node.get("token").asText()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email").value(email))
-                .andExpect(jsonPath("$.role").value("FREELANCER"));
+                .andExpect(jsonPath("$.role").value("MEMBER"));
     }
 
     @Test

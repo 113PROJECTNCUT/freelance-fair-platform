@@ -25,7 +25,7 @@ function UserMenu() {
   if (user) {
     return (
       <NavLink to="/account" className="user-chip" title="我的帳號">
-        {user.displayName}<small>{ROLE_LABEL[user.role]}</small>
+        {user.displayName}{user.role === 'ADMIN' && <small>{ROLE_LABEL.ADMIN}</small>}
       </NavLink>
     )
   }

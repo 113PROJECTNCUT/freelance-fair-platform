@@ -39,4 +39,4 @@ export function useAuth() {
   return ctx
 }
 
-export const ROLE_LABEL = { FREELANCER: '接案者', CLIENT: '發案方', ADMIN: '管理員' }
+export const ROLE_LABEL = { MEMBER: '會員', ADMIN: '管理員' }

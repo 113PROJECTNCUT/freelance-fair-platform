@@ -153,20 +153,12 @@ input:focus, textarea:focus { outline: 2px solid #bcdcf5; background: #fff; }
 .auth-card label { display: grid; gap: 5px; font-weight: 600; font-size: 14.5px; }
 .auth-card input:not([type=radio]) { font: inherit; font-weight: 400; padding: 9px 11px; border: 1px solid var(--line); border-radius: 8px; }
 .auth-card input:focus { outline: 2px solid var(--blue); outline-offset: -1px; }
-.role-pick { border: 0; padding: 0; margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.role-pick legend { font-weight: 600; font-size: 14.5px; margin-bottom: 6px; }
-.role-pick label { border: 1.5px solid var(--line); border-radius: 10px; padding: 12px; cursor: pointer; gap: 2px; }
-.role-pick label.selected { border-color: var(--blue); background: #eef6fd; }
-.role-pick input { position: absolute; opacity: 0; pointer-events: none; }
-.role-pick span { font-weight: 400; font-size: 13px; color: var(--grey); }
 .form-error { color: var(--red); font-weight: 500; font-size: 13px; margin: 0; }
 .notice { background: #eef6fd; border: 1px solid #aed3f0; border-radius: 9px; padding: 10px 14px; margin-bottom: 14px; font-size: 14px; line-height: 1.55; }
 .notice.warn { background: #fef5e7; border: 1px solid #f5cf8e; }
 .notice.ok { background: #eafaf1; border: 1px solid #a9dfbf; }
 .kv { display: grid; grid-template-columns: 90px 1fr; gap: 10px 12px; margin: 0 0 20px; }
 .kv dt { color: var(--grey); } .kv dd { margin: 0; }
-.tag.freelancer { background: #eaf4fc; border-color: #aed3f0; }
-.tag.client { background: #fef5e7; border-color: #f5cf8e; }
 
 /* ── 案件 ── */
 select { font: inherit; border: 1px solid var(--line); border-radius: 9px; padding: 8px 10px; width: 100%; background: var(--card); margin-top: 4px; }

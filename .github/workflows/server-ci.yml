@@ -38,14 +38,14 @@ jobs:
           for i in $(seq 1 30); do curl -sf localhost:8080/api/health && break; sleep 2; done
           set -x
           curl -sf -X POST localhost:8080/api/auth/register -H 'Content-Type: application/json' \
-            -d '{"email":"demo@example.com","password":"secret123","displayName":"示範接案者","role":"FREELANCER"}'
+            -d '{"email":"demo@example.com","password":"secret123","displayName":"示範接案者"}'
           TOKEN=$(curl -sf -X POST localhost:8080/api/auth/login -H 'Content-Type: application/json' \
             -d '{"email":"demo@example.com","password":"secret123"}' | jq -r .token)
-          curl -sf localhost:8080/api/auth/me -H "Authorization: Bearer $TOKEN" | jq -e '.role == "FREELANCER"'
+          curl -sf localhost:8080/api/auth/me -H "Authorization: Bearer $TOKEN" | jq -e '.role == "MEMBER"'
           test "$(curl -s -o /dev/null -w '%{http_code}' localhost:8080/api/auth/me)" = 401
           # 發案方刊登案件，訪客查得到
           curl -sf -X POST localhost:8080/api/auth/register -H 'Content-Type: application/json' \
-            -d '{"email":"boss@example.com","password":"secret123","displayName":"示範發案方","role":"CLIENT"}'
+            -d '{"email":"boss@example.com","password":"secret123","displayName":"示範發案方"}'
           CTOKEN=$(curl -sf -X POST localhost:8080/api/auth/login -H 'Content-Type: application/json' \
             -d '{"email":"boss@example.com","password":"secret123"}' | jq -r .token)
           DEADLINE=$(date -d '+30 days' +%F)

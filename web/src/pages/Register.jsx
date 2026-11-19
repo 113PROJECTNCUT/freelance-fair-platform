@@ -3,18 +3,13 @@ import { Link, useNavigate } from 'react-router-dom'
 import { authApi } from '../api/client.js'
 import BackendNotice, { useBackendStatus } from '../auth/BackendNotice.jsx'
 
-const ROLES = [
-  { value: 'FREELANCER', title: '我是接案者', desc: '接案、報價、交付作品' },
-  { value: 'CLIENT', title: '我是發案方', desc: '刊登案件、挑選接案者、驗收' },
-]
-
 // 與後端規則一致：8–72 碼，同時有英文字母與數字
 export const PASSWORD_RULE = /^(?=.*[A-Za-z])(?=.*\d).{8,72}$/
 
 export default function Register() {
   const navigate = useNavigate()
   const backend = useBackendStatus()
-  const [form, setForm] = useState({ email: '', password: '', confirm: '', displayName: '', role: 'FREELANCER' })
+  const [form, setForm] = useState({ email: '', password: '', confirm: '', displayName: '' })
   const [errors, setErrors] = useState({})
   const [busy, setBusy] = useState(false)
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value })
@@ -36,8 +31,8 @@ export default function Register() {
     if (Object.keys(e).length) return
     setBusy(true)
     try {
-      const { email, password, displayName, role } = form
-      await authApi.register({ email, password, displayName: displayName.trim(), role })
+      const { email, password, displayName } = form
+      await authApi.register({ email, password, displayName: displayName.trim() })
       navigate('/login', { state: { registered: true, email } })
     } catch (err) {
       const fe = {}
@@ -52,18 +47,9 @@ export default function Register() {
   return (
     <section className="auth-card">
       <h1>註冊會員</h1>
+      <p className="muted">一個帳號就能刊登案件，也能接案。</p>
       <BackendNotice status={backend} />
       <form onSubmit={onSubmit} noValidate>
-        <fieldset className="role-pick">
-          <legend>選擇身分</legend>
-          {ROLES.map((r) => (
-            <label key={r.value} className={form.role === r.value ? 'selected' : ''}>
-              <input type="radio" name="role" value={r.value} checked={form.role === r.value} onChange={set('role')} />
-              <strong>{r.title}</strong>
-              <span>{r.desc}</span>
-            </label>
-          ))}
-        </fieldset>
         <label>
           顯示名稱
           <input value={form.displayName} onChange={set('displayName')} maxLength={30} />
@@ -85,7 +71,7 @@ export default function Register() {
           <input type="password" autoComplete="new-password" value={form.confirm} onChange={set('confirm')} />
           {errors.confirm && <small className="form-error">{errors.confirm}</small>}
         </label>
-        {(errors.form || errors.role) && <p className="form-error" role="alert">{errors.form || errors.role}</p>}
+        {errors.form && <p className="form-error" role="alert">{errors.form}</p>}
         <button className="btn primary" disabled={busy || backend !== 'up'}>{busy ? '送出中…' : '建立帳號'}</button>
       </form>
       <p className="muted">已經有帳號？<Link to="/login">登入</Link></p>

@@ -8,7 +8,7 @@ export default function Account() {
   const { user, loading, logout } = useAuth()
   const [myJobs, setMyJobs] = useState(null)
   useEffect(() => {
-    if (user?.role === 'CLIENT') jobsApi.mine().then(setMyJobs).catch(() => setMyJobs([]))
+    if (user) jobsApi.mine().then(setMyJobs).catch(() => setMyJobs([]))
   }, [user])
   if (loading) return <p className="muted">載入中…</p>
   if (!user) return <Navigate to="/login" replace />
@@ -18,11 +18,11 @@ export default function Account() {
       <dl className="kv">
         <dt>顯示名稱</dt><dd>{user.displayName}</dd>
         <dt>Email</dt><dd>{user.email}</dd>
-        <dt>身分</dt><dd><span className={`tag ${user.role.toLowerCase()}`}>{ROLE_LABEL[user.role]}</span></dd>
+        {user.role === 'ADMIN' && <><dt>身分</dt><dd><span className="tag">{ROLE_LABEL.ADMIN}</span></dd></>}
         <dt>加入時間</dt><dd>{new Date(user.createdAt).toLocaleString('zh-TW')}</dd>
       </dl>
       <button className="btn ghost" onClick={logout}>登出</button>
-      {user.role === 'CLIENT' && (
+      {(
         <div className="my-jobs">
           <h3>我刊登的案件</h3>
           {!myJobs ? <p className="muted">載入中…</p>

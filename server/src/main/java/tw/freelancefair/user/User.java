@@ -2,6 +2,8 @@ package tw.freelancefair.user;
 
 import jakarta.persistence.*;
 import java.time.Instant;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "users")
@@ -21,7 +23,9 @@ public class User {
     @Column(name = "display_name", nullable = false, length = 30)
     private String displayName;
 
+    /** 存成 VARCHAR 而非 MySQL ENUM，之後新增角色不必改欄位型別 */
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     @Column(nullable = false, length = 20)
     private Role role;
 
@@ -31,11 +35,11 @@ public class User {
     protected User() {
     }
 
-    public User(String email, String passwordHash, String displayName, Role role) {
+    public User(String email, String passwordHash, String displayName) {
         this.email = email;
         this.passwordHash = passwordHash;
         this.displayName = displayName;
-        this.role = role;
+        this.role = Role.MEMBER;
     }
 
     @PrePersist
