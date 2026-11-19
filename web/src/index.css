@@ -194,3 +194,13 @@ label.check input { width: auto; margin: 0; }
 .tag-btn { cursor: pointer; font: inherit; font-size: 12px; }
 .tag-btn:hover { border-color: var(--blue); color: var(--blue); }
 .tag.open { background: #eafaf1; border-color: #a9dfbf; color: var(--green); }
+
+/* ── 應徵（add-job-application） ── */
+.apply-card { margin-top: 20px; }
+.apply-form label, .invite-form label { display: grid; gap: 5px; margin-bottom: 12px; }
+.application-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+.application-list li { border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+.application-list p { margin: 6px 0; }
+.application-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.confirm-row { align-items: center; gap: 8px; flex-wrap: wrap; }
+.tag.muted-tag { color: var(--grey); }

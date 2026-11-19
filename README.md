@@ -75,7 +75,7 @@ GitHub Actions 的 **Cloud smoke test** 每天會實際呼叫雲端後端檢查�
 
 ## 會員系統（Spring Boot 後端）
 
-`server/` 是正式版後端，目前完成 **會員註冊／登入**、**刊登與查詢案件**（規格：`openspec/changes/add-member-auth/`、`add-job-posting/`）。
+`server/` 是正式版後端，目前完成 **會員註冊／登入**、**刊登與查詢案件**、**會員中心**、**應徵與選擇接案者**（規格：`openspec/changes/` 下各 change）。
 
 | API | 說明 |
 |---|---|
@@ -91,6 +91,12 @@ GitHub Actions 的 **Cloud smoke test** 每天會實際呼叫雲端後端檢查�
 | `POST /api/me/portfolio`、`DELETE /api/me/portfolio/{id}` | 新增／刪除作品 |
 | `GET /api/members` | 找接案者（只列開放接案），可帶 `keyword`、`skill` |
 | `GET /api/members/{id}` | 會員公開檔案（不含 Email） |
+| `POST /api/jobs/{id}/applications` | 應徵：`{message, quotedPrice, estimatedDays}`，不能應徵自己的案件 |
+| `GET /api/jobs/{id}/applications` | 發案方查看這個案件的應徵 |
+| `POST /api/jobs/{id}/applications/{applicationId}/accept` | 發案方選定接案者，案件改為進行中 |
+| `GET /api/me/applications` | 我送出的應徵與結果 |
+| `POST /api/jobs/{id}/invitations` | 發案方邀請開放接案的會員應徵：`{freelancerId, message}` |
+| `GET /api/me/invitations` | 我收到的邀請 |
 
 完整需求進度見 [`docs/requirements.md`](docs/requirements.md)（對照專題簡報的需求描述）。
 
@@ -140,7 +146,7 @@ IntelliJ 對 `src/test` 按右鍵 → Run Tests。每次 push 到 GitHub，**Ser
 - ~~會員註冊／登入~~（完成）
 - ~~刊登與查詢案件~~（完成）
 - ~~會員中心：修改資料、作品集、接案者公開檔案~~（完成）
-- 應徵與選擇接案者（下一個 OpenSpec change）
+- ~~應徵與選擇接案者~~（完成）
 - 合約、里程碑 REST API ＋ MySQL
 - 合約審查改呼叫 LLM API，輸出維持 `reviewContract()` 的格式
 - 第三方金流沙箱串接託管與撥款

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { profileApi } from '../api/client.js'
 import { useAuth } from '../auth/AuthContext.jsx'
+import InviteBox from './job/InviteBox.jsx'
 
 export default function MemberProfile() {
   const { id } = useParams()
@@ -51,6 +52,12 @@ export default function MemberProfile() {
           )}
         </section>
       </div>
+      {user && user.id !== p.id && p.openForWork && (
+        <section className="card apply-card">
+          <h3>邀請 {p.displayName} 應徵</h3>
+          <InviteBox member={p} />
+        </section>
+      )}
     </>
   )
 }

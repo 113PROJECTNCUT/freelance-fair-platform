@@ -19,16 +19,18 @@ public record JobResponse(
         List<String> acceptanceCriteria,
         JobStatus status,
         ClientInfo client,
-        Instant createdAt
+        Instant createdAt,
+        /** 目前應徵人數（openspec: add-job-application） */
+        long applicationCount
 ) {
     /** 公開顯示的發案方資訊：不含 Email */
     public record ClientInfo(Long id, String displayName) {}
 
-    public static JobResponse from(Job j) {
+    public static JobResponse from(Job j, long applicationCount) {
         return new JobResponse(j.getId(), j.getTitle(), j.getCategory(), j.getDescription(),
                 j.getBudgetMin(), j.getBudgetMax(), j.getDeadline(), j.getRevisionLimit(),
                 j.getIpOwnership(), j.isPortfolioAllowed(), List.copyOf(j.getAcceptanceCriteria()),
                 j.getStatus(), new ClientInfo(j.getClient().getId(), j.getClient().getDisplayName()),
-                j.getCreatedAt());
+                j.getCreatedAt(), applicationCount);
     }
 }

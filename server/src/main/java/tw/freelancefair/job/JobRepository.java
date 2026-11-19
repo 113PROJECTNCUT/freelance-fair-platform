@@ -1,13 +1,23 @@
 package tw.freelancefair.job;
 
+import jakarta.persistence.LockModeType;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface JobRepository extends JpaRepository<Job, Long>, JpaSpecificationExecutor<Job> {
 
     List<Job> findByClientIdOrderByCreatedAtDesc(Long clientId);
+
+    /** 選定接案者時使用：SELECT … FOR UPDATE */
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select j from Job j where j.id = :id")
+    Optional<Job> findForUpdate(@Param("id") Long id);
 
     static Specification<Job> hasStatus(JobStatus status) {
         return (root, q, cb) -> cb.equal(root.get("status"), status);

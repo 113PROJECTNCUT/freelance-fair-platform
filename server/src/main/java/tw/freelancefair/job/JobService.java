@@ -8,6 +8,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tw.freelancefair.application.JobApplicationRepository;
 import tw.freelancefair.common.ApiException;
 import tw.freelancefair.job.dto.CreateJobRequest;
 import tw.freelancefair.job.dto.JobResponse;
@@ -21,10 +22,16 @@ public class JobService {
 
     private final JobRepository jobs;
     private final UserRepository users;
+    private final JobApplicationRepository applications;
 
-    public JobService(JobRepository jobs, UserRepository users) {
+    public JobService(JobRepository jobs, UserRepository users, JobApplicationRepository applications) {
         this.jobs = jobs;
         this.users = users;
+        this.applications = applications;
+    }
+
+    private JobResponse toResponse(Job job) {
+        return JobResponse.from(job, applications.countByJobId(job.getId()));
     }
 
     @Transactional
@@ -39,7 +46,7 @@ public class JobService {
         Job job = new Job(client, req.title().trim(), req.category(), req.description().trim(),
                 req.budgetMin(), req.budgetMax(), req.deadline(), req.revisionLimit(),
                 req.ipOwnership(), req.portfolioAllowed(), criteria);
-        return JobResponse.from(jobs.save(job));
+        return JobResponse.from(jobs.save(job), 0);
     }
 
     @Transactional(readOnly = true)
@@ -50,17 +57,17 @@ public class JobService {
                 .and(budgetAtLeast(minBudget))
                 .and(budgetAtMost(maxBudget));
         var page = PageRequest.of(0, MAX_RESULTS, Sort.by(Sort.Direction.DESC, "createdAt", "id"));
-        return jobs.findAll(spec, page).map(JobResponse::from).toList();
+        return jobs.findAll(spec, page).map(this::toResponse).toList();
     }
 
     @Transactional(readOnly = true)
     public JobResponse get(Long id) {
-        return jobs.findById(id).map(JobResponse::from)
+        return jobs.findById(id).map(this::toResponse)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "找不到這個案件"));
     }
 
     @Transactional(readOnly = true)
     public List<JobResponse> mine(Long userId) {
-        return jobs.findByClientIdOrderByCreatedAtDesc(userId).stream().map(JobResponse::from).toList();
+        return jobs.findByClientIdOrderByCreatedAtDesc(userId).stream().map(this::toResponse).toList();
     }
 }

@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link, Navigate } from 'react-router-dom'
-import { jobsApi, profileApi } from '../api/client.js'
+import { applicationsApi, jobsApi, profileApi } from '../api/client.js'
 import { ROLE_LABEL, useAuth } from '../auth/AuthContext.jsx'
+import { APPLICATION_STATUS_LABEL, JOB_STATUS_LABEL } from '../data/applications.js'
 import { formatBudget } from '../data/jobs.js'
 import { MAX_SKILL_LENGTH, MAX_SKILLS, parseSkills } from '../data/skills.js'
 
@@ -149,12 +150,16 @@ export default function Account() {
   const { user, loading, logout } = useAuth()
   const [profile, setProfile] = useState(null)
   const [myJobs, setMyJobs] = useState(null)
+  const [myApps, setMyApps] = useState(null)
+  const [invites, setInvites] = useState(null)
   const [error, setError] = useState('')
 
   useEffect(() => {
     if (!user) return
     profileApi.mine().then(setProfile).catch((e) => setError(e.message))
     jobsApi.mine().then(setMyJobs).catch(() => setMyJobs([]))
+    applicationsApi.mine().then(setMyApps).catch(() => setMyApps([]))
+    applicationsApi.myInvitations().then(setInvites).catch(() => setInvites([]))
   }, [user?.id]) // eslint-disable-line react-hooks/exhaustive-deps
 
   if (loading) return <p className="muted">載入中…</p>
@@ -190,12 +195,53 @@ export default function Account() {
               {myJobs.map((j) => (
                 <li key={j.id}>
                   <Link to={`/jobs/${j.id}`}>{j.title}</Link>
-                  <span className="muted small">{formatBudget(j.budgetMin, j.budgetMax)}｜{j.status === 'OPEN' ? '招募中' : j.status}</span>
+                  <span className="muted small">{formatBudget(j.budgetMin, j.budgetMax)}｜{JOB_STATUS_LABEL[j.status] ?? j.status}｜應徵 {j.applicationCount ?? 0} 人</span>
                 </li>
               ))}
             </ul>
           )}
       </section>
+      <div className="grid two my-jobs-card">
+        <section className="card">
+          <h3>我的應徵</h3>
+          {!myApps ? <p className="muted">載入中…</p>
+            : myApps.length === 0 ? <p className="muted">還沒有應徵案件。<Link to="/jobs">去找案件 →</Link></p>
+            : (
+              <ul className="my-jobs-list">
+                {myApps.map((a) => (
+                  <li key={a.id}>
+                    <Link to={`/jobs/${a.jobId}`}>{a.jobTitle}</Link>
+                    <span className="muted small">報價 NT$ {a.quotedPrice.toLocaleString()}｜
+                      <b className={a.status === 'ACCEPTED' ? 'ok-text' : ''}>{APPLICATION_STATUS_LABEL[a.status] ?? a.status}</b></span>
+                  </li>
+                ))}
+              </ul>
+            )}
+        </section>
+        <section className="card">
+          <h3>收到的邀請</h3>
+          {!invites ? <p className="muted">載入中…</p>
+            : invites.length === 0 ? <p className="muted">還沒有收到邀請。打開「開放接案」，發案方就能在找接案者看到你。</p>
+            : (
+              <ul className="my-jobs-list">
+                {invites.map((i) => (
+                  <li key={i.id}>
+                    <div>
+                      <Link to={`/jobs/${i.jobId}`}>{i.jobTitle}</Link>
+                      <span className="muted small">　來自 {i.client.displayName}</span>
+                      {i.message && <p className="muted small">「{i.message}」</p>}
+                    </div>
+                    <span className="small">
+                      {i.applied ? <span className="ok-text">已應徵</span>
+                        : i.jobStatus === 'OPEN' ? <Link to={`/jobs/${i.jobId}`}>去應徵 →</Link>
+                        : <span className="muted">{JOB_STATUS_LABEL[i.jobStatus] ?? i.jobStatus}</span>}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+        </section>
+      </div>
     </>
   )
 }

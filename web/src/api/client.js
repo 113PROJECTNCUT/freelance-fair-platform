@@ -92,3 +92,14 @@ export const profileApi = {
     return api(`/api/members${qs ? `?${qs}` : ''}`, { auth: false })
   },
 }
+
+/** 應徵與邀請（openspec: add-job-application） */
+export const applicationsApi = {
+  apply: (jobId, body) => api(`/api/jobs/${encodeURIComponent(jobId)}/applications`, { method: 'POST', body }),
+  listForJob: (jobId) => api(`/api/jobs/${encodeURIComponent(jobId)}/applications`),
+  accept: (jobId, applicationId) =>
+    api(`/api/jobs/${encodeURIComponent(jobId)}/applications/${encodeURIComponent(applicationId)}/accept`, { method: 'POST' }),
+  mine: () => api('/api/me/applications'),
+  invite: (jobId, body) => api(`/api/jobs/${encodeURIComponent(jobId)}/invitations`, { method: 'POST', body }),
+  myInvitations: () => api('/api/me/invitations'),
+}

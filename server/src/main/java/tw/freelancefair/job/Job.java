@@ -88,6 +88,11 @@ public class Job {
         this.createdAt = Instant.now();
     }
 
+    /** 選定接案者後改為進行中（openspec: add-job-application） */
+    public void startWork() {
+        this.status = JobStatus.IN_PROGRESS;
+    }
+
     public Long getId() { return id; }
     public User getClient() { return client; }
     public String getTitle() { return title; }
