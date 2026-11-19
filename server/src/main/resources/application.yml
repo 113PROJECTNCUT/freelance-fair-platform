@@ -25,4 +25,4 @@ app:
     secret: ${JWT_SECRET:dev-only-secret-please-change-0123456789abcdef}
     expiration-minutes: 120
   cors:
-    allowed-origins: ${CORS_ORIGINS:http://localhost:5173,https://s845taiwan.github.io}
+    allowed-origins: ${CORS_ORIGINS:http://localhost:5173,https://113projectncut.github.io,https://s845taiwan.github.io}

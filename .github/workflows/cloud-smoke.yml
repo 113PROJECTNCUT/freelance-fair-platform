@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       API: https://freelance-fair-platform.onrender.com
-      ORIGIN: https://s845taiwan.github.io
+      ORIGIN: https://113projectncut.github.io
     steps:
       - name: 喚醒後端（免費方案閒置會休眠，最多約 1–2 分鐘）
         run: |

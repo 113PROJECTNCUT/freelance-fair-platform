@@ -65,7 +65,7 @@ openspec/changes/add-member-auth/  會員註冊／登入規格
 
 ## 雲端版
 
-- 網站：<https://s845taiwan.github.io/freelance-fair-platform/>
+- 網站：<https://113projectncut.github.io/freelance-fair-platform/>
 - 後端：<https://freelance-fair-platform.onrender.com>（Render 免費方案，Docker 部署）
 - 資料庫：Aiven 免費 MySQL
 
@@ -99,7 +99,7 @@ GitHub Actions 的 **Cloud smoke test** 每天會實際呼叫雲端後端檢查�
 1. **Node.js LTS**：<https://nodejs.org> 下載安裝（前端用）
 2. **IntelliJ IDEA Community**（免費）：<https://www.jetbrains.com/idea/download/>
    內建 Maven，也能直接幫你下載 JDK，不用另外裝 Java。
-3. **Git**：<https://git-scm.com>，然後 `git clone https://github.com/S845Taiwan/freelance-fair-platform.git`
+3. **Git**：<https://git-scm.com>，然後 `git clone https://github.com/113PROJECTNCUT/freelance-fair-platform.git`
 
 ### 在本機啟動後端
 
