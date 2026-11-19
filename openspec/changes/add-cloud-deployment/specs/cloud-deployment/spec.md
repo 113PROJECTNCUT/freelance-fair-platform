@@ -32,7 +32,7 @@
 
 #### Scenario: GitHub Pages 呼叫登入
 - **WHEN** 瀏覽器自 `https://113projectncut.github.io` 對 `/api/auth/login` 送出 CORS 預檢
-- **THEN** 回應包含 `Access-Control-Allow-Origin: https://s845taiwan.github.io`
+- **THEN** 回應包含 `Access-Control-Allow-Origin: https://113projectncut.github.io`
 
 ### Requirement: 休眠喚醒提示
 前端在確認伺服器狀態期間 SHALL 顯示「正在連線伺服器」並說明第一次開啟最多約需 1 分鐘；確認連不到時 SHALL 提示稍後再試，案件列表改顯示標明的示範資料。
