@@ -63,6 +63,16 @@ openspec/changes/add-member-auth/  會員註冊／登入規格
 .github/workflows/server-ci.yml    後端測試
 ```
 
+## 雲端版
+
+- 網站：<https://s845taiwan.github.io/freelance-fair-platform/>
+- 後端：<https://freelance-fair-platform.onrender.com>（Render 免費方案，Docker 部署）
+- 資料庫：Aiven 免費 MySQL
+
+免費主機閒置 15 分鐘會休眠，第一次開啟要等約 1 分鐘，展示前先打開一次網站。
+Render 的環境變數：`SPRING_PROFILES_ACTIVE=mysql`、`DB_URL`、`DB_USER`、`DB_PASSWORD`、`JWT_SECRET`（規格與說明見 `openspec/changes/add-cloud-deployment/`）。
+GitHub Actions 的 **Cloud smoke test** 每天會實際呼叫雲端後端檢查一次，也可以在 Actions 頁面手動執行。
+
 ## 會員系統（Spring Boot 後端）
 
 `server/` 是正式版後端，目前完成 **會員註冊／登入**、**刊登與查詢案件**（規格：`openspec/changes/add-member-auth/`、`add-job-posting/`）。
