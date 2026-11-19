@@ -10,6 +10,9 @@ spring:
       # 免費資料庫連線數有限，連線池開小一點
       maximum-pool-size: 5
       minimum-idle: 1
+  jpa:
+    # 明確指定 MySQL，連線失敗時才會顯示真正的錯誤，而不是「Unable to determine Dialect」
+    database-platform: org.hibernate.dialect.MySQLDialect
   h2:
     console:
       enabled: false
