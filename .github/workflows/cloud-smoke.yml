@@ -26,7 +26,7 @@ jobs:
             -H "Origin: $ORIGIN" -H "Access-Control-Request-Method: POST" \
             -H "Access-Control-Request-Headers: content-type" | tee headers.txt
           grep -i "access-control-allow-origin: $ORIGIN" headers.txt
-      - name: 註冊 → 登入 → 取得自己 → 刊登 → 查詢
+      - name: 註冊 → 登入 → 取得自己 → 查詢案件 → 修改資料 → 查詢接案者
         run: |
           set -x
           N=$(date +%s)
@@ -36,3 +36,11 @@ jobs:
             -d "{\"email\":\"smoke$N@example.com\",\"password\":\"smoke12345\"}" | jq -r .token)
           curl -sf "$API/api/auth/me" -H "Authorization: Bearer $TOKEN" | jq -e '.role == "MEMBER"'
           curl -sf "$API/api/jobs" | jq -e 'type == "array"'
+          # 修改資料、開放接案後可被查到（openspec: add-member-profile）
+          curl -sf -X PUT "$API/api/me/profile" -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' \
+            -d "{\"displayName\":\"CI 測試 $N\",\"bio\":\"自動測試帳號\",\"skills\":[\"smoke$N\"],\"openForWork\":true}"
+          curl -sf "$API/api/members?skill=smoke$N" | jq -e 'length == 1'
+          # 關閉開放接案，測試帳號不會出現在「找接案者」
+          curl -sf -X PUT "$API/api/me/profile" -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' \
+            -d "{\"displayName\":\"CI 測試\",\"skills\":[],\"openForWork\":false}"
+          curl -sf "$API/api/members?skill=smoke$N" | jq -e 'length == 0'
