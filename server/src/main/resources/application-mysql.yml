@@ -1,9 +1,20 @@
-# 用法：mvn spring-boot:run -Dspring-boot.run.profiles=mysql
+# 用 MySQL：本機 docker compose，或雲端（Render + Aiven）
+# 本機：mvn spring-boot:run -Dspring-boot.run.profiles=mysql
+# 雲端：環境變數 SPRING_PROFILES_ACTIVE=mysql，並設定 DB_URL、DB_USER、DB_PASSWORD、JWT_SECRET
 spring:
   datasource:
     url: ${DB_URL:jdbc:mysql://localhost:3306/fairgig?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Taipei}
     username: ${DB_USER:fairgig}
     password: ${DB_PASSWORD:fairgig123}
+    hikari:
+      # 免費資料庫連線數有限，連線池開小一點
+      maximum-pool-size: 5
+      minimum-idle: 1
   h2:
     console:
       enabled: false
+
+app:
+  jwt:
+    # 正式環境一定要設定 JWT_SECRET，沒設定就啟動失敗，避免用到開發用金鑰
+    secret: ${JWT_SECRET}

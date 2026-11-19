@@ -23,6 +23,8 @@ jobs:
           cache: maven
       - name: 編譯與測試
         run: mvn -B -ntp test
+      - name: 確認 Docker 映像檔能建置（Render 部署用）
+        run: docker build -t fairgig-server .
       - name: 上傳測試報告
         if: always()
         uses: actions/upload-artifact@v4
