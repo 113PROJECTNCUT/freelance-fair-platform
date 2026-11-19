@@ -36,7 +36,9 @@ export default function Register() {
       navigate('/login', { state: { registered: true, email } })
     } catch (err) {
       const fe = {}
-      for (const { field, message } of err.errors ?? []) fe[field] = message
+      const shown = ['email', 'password', 'displayName']
+      for (const { field, message } of err.errors ?? []) if (shown.includes(field)) fe[field] = message
+      // 表單沒有對應欄位的錯誤，一律顯示在按鈕上方，避免看起來像沒反應
       if (!Object.keys(fe).length) fe.form = err.message
       setErrors(fe)
     } finally {
