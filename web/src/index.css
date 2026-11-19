@@ -19,7 +19,6 @@ nav { display: flex; gap: 4px; margin-left: auto; overflow-x: auto; }
 nav a { padding: 7px 12px; border-radius: 8px; color: #cfd8e3; font-size: 15px; white-space: nowrap; }
 nav a:hover { background: rgba(255,255,255,.08); color: #fff; }
 nav a.active { background: var(--blue); color: #fff; }
-.demo-banner { background: #fff8e6; color: #8a6100; text-align: center; font-size: 13px; padding: 6px 16px; border-bottom: 1px solid #f5e3b3; }
 
 main { padding: 28px 24px 40px; min-height: 70vh; }
 .footer { color: var(--grey); font-size: 12.5px; padding: 18px 24px 30px; border-top: 1px solid var(--line); }

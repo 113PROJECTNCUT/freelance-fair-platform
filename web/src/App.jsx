@@ -54,9 +54,6 @@ export default function App() {
           <UserMenu />
         </div>
       </header>
-      <div className="demo-banner">
-        示範版：AI 功能目前以瀏覽器端規則式引擎模擬，正式版將串接 Spring Boot 後端與大語言模型 API。
-      </div>
       <main className="wrap">
         <Routes>
           <Route path="/" element={<Home />} />
