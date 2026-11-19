@@ -65,3 +65,15 @@ export const authApi = {
   login: (email, password) => api('/api/auth/login', { method: 'POST', body: { email, password }, auth: false }),
   me: () => api('/api/auth/me'),
 }
+
+export const jobsApi = {
+  search: (filters = {}) => {
+    const q = new URLSearchParams()
+    for (const [k, v] of Object.entries(filters)) if (v !== '' && v != null) q.set(k, v)
+    const qs = q.toString()
+    return api(`/api/jobs${qs ? `?${qs}` : ''}`, { auth: false })
+  },
+  get: (id) => api(`/api/jobs/${encodeURIComponent(id)}`, { auth: false }),
+  create: (job) => api('/api/jobs', { method: 'POST', body: job }),
+  mine: () => api('/api/me/jobs'),
+}

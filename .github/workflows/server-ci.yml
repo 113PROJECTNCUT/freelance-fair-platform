@@ -41,6 +41,16 @@ jobs:
             -d '{"email":"demo@example.com","password":"secret123"}' | jq -r .token)
           curl -sf localhost:8080/api/auth/me -H "Authorization: Bearer $TOKEN" | jq -e '.role == "FREELANCER"'
           test "$(curl -s -o /dev/null -w '%{http_code}' localhost:8080/api/auth/me)" = 401
+          # 發案方刊登案件，訪客查得到
+          curl -sf -X POST localhost:8080/api/auth/register -H 'Content-Type: application/json' \
+            -d '{"email":"boss@example.com","password":"secret123","displayName":"示範發案方","role":"CLIENT"}'
+          CTOKEN=$(curl -sf -X POST localhost:8080/api/auth/login -H 'Content-Type: application/json' \
+            -d '{"email":"boss@example.com","password":"secret123"}' | jq -r .token)
+          DEADLINE=$(date -d '+30 days' +%F)
+          curl -sf -X POST localhost:8080/api/jobs -H "Authorization: Bearer $CTOKEN" -H 'Content-Type: application/json' \
+            -d "{\"title\":\"公司形象網站製作\",\"category\":\"WEB\",\"description\":\"製作公司形象網站，包含首頁、關於我們、服務介紹三個頁面。\",\"budgetMin\":30000,\"budgetMax\":50000,\"deadline\":\"$DEADLINE\",\"revisionLimit\":2,\"ipOwnership\":\"CLIENT_OWNS\",\"portfolioAllowed\":true,\"acceptanceCriteria\":[\"支援手機與桌機\"]}"
+          curl -sf 'localhost:8080/api/jobs?category=WEB' | jq -e 'length == 1'
+          test "$(curl -s -o /dev/null -w '%{http_code}' -X POST localhost:8080/api/jobs -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' -d '{}')" = 400
       - name: 啟動失敗時印出 log
         if: failure()
         run: cat app.log || true

@@ -65,7 +65,7 @@ openspec/changes/add-member-auth/  會員註冊／登入規格
 
 ## 會員系統（Spring Boot 後端）
 
-`server/` 是正式版後端，目前完成 **會員註冊／登入**（規格：`openspec/changes/add-member-auth/`）。
+`server/` 是正式版後端，目前完成 **會員註冊／登入**、**刊登與查詢案件**（規格：`openspec/changes/add-member-auth/`、`add-job-posting/`）。
 
 | API | 說明 |
 |---|---|
@@ -73,6 +73,12 @@ openspec/changes/add-member-auth/  會員註冊／登入規格
 | `POST /api/auth/login` | 登入：回傳 `{token, user}` |
 | `GET /api/auth/me` | 帶 `Authorization: Bearer <token>`，回傳自己的資料 |
 | `GET /api/health` | 後端是否啟動 |
+| `POST /api/jobs` | 刊登案件（限發案方，需登入） |
+| `GET /api/jobs` | 公開案件列表，可帶 `category`、`keyword`、`minBudget`、`maxBudget` |
+| `GET /api/jobs/{id}` | 案件詳情 |
+| `GET /api/me/jobs` | 我刊登的案件 |
+
+完整需求進度見 [`docs/requirements.md`](docs/requirements.md)（對照專題簡報的需求描述）。
 
 ### 第一次安裝（電腦什麼都沒有的話）
 
@@ -118,7 +124,8 @@ IntelliJ 對 `src/test` 按右鍵 → Run Tests。每次 push 到 GitHub，**Ser
 ## 下一步
 
 - ~~會員註冊／登入~~（完成）
-- 案件刊登 API：發案方建立案件、接案者瀏覽（下一個 OpenSpec change）
+- ~~刊登與查詢案件~~（完成）
+- 會員中心：修改資料、作品集、接案者公開檔案（下一個 OpenSpec change）
 - 合約、里程碑 REST API ＋ MySQL
 - 合約審查改呼叫 LLM API，輸出維持 `reviewContract()` 的格式
 - 第三方金流沙箱串接託管與撥款
