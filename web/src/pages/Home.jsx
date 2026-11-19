@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 const FEATURES = [
   { to: '/post', color: 'blue', step: '1', title: 'AI 需求轉驗收清單', who: '發案方',
     desc: '把需求描述轉成可逐項勾選的驗收標準，雙方簽約前就先對齊「做到什麼才算完成」。' },
-  { to: '/freelancers', color: 'orange', step: '2', title: '接案者信用評分', who: '發案方',
+  { to: '/freelancers/score-demo', color: 'orange', step: '2', title: '接案者信用評分', who: '發案方',
     desc: '依準時交付率、一次驗收通過率、雙方互評與爭議紀錄計算分數，挑人不再靠感覺。' },
   { to: '/review', color: 'green', step: '3', title: '雙向 AI 合約健檢', who: '接案者＋發案方',
     desc: '逐條標示條款「對誰不利」與風險等級，附白話說明與對等修改範本。' },

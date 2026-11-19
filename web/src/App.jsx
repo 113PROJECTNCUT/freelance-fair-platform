@@ -3,6 +3,8 @@ import Home from './pages/Home.jsx'
 import Review from './pages/Review.jsx'
 import PostJob from './pages/PostJob.jsx'
 import Freelancers from './pages/Freelancers.jsx'
+import ScoreDemo from './pages/ScoreDemo.jsx'
+import MemberProfile from './pages/MemberProfile.jsx'
 import Milestones from './pages/Milestones.jsx'
 import Login from './pages/Login.jsx'
 import Register from './pages/Register.jsx'
@@ -15,7 +17,7 @@ const NAV = [
   ['/', '首頁'],
   ['/jobs', '找案件'],
   ['/post', '刊登案件'],
-  ['/freelancers', '挑選接案者'],
+  ['/freelancers', '找接案者'],
   ['/review', '雙向合約健檢'],
   ['/milestones', '里程碑託管'],
 ]
@@ -61,6 +63,8 @@ export default function App() {
           <Route path="/jobs/:id" element={<JobDetail />} />
           <Route path="/post" element={<PostJob />} />
           <Route path="/freelancers" element={<Freelancers />} />
+          <Route path="/freelancers/score-demo" element={<ScoreDemo />} />
+          <Route path="/members/:id" element={<MemberProfile />} />
           <Route path="/review" element={<Review />} />
           <Route path="/milestones" element={<Milestones />} />
           <Route path="/login" element={<Login />} />

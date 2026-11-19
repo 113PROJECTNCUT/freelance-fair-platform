@@ -23,12 +23,19 @@ export function AuthProvider({ children }) {
     return user
   }, [])
 
+  /** 修改資料後重新取得目前使用者（例如導覽列的名稱） */
+  const refresh = useCallback(async () => {
+    const me = await authApi.me()
+    setUser(me)
+    return me
+  }, [])
+
   const logout = useCallback(() => {
     setToken(null)
     setUser(null)
   }, [])
 
-  const value = useMemo(() => ({ user, loading, login, logout }), [user, loading, login, logout])
+  const value = useMemo(() => ({ user, loading, login, logout, refresh }), [user, loading, login, logout, refresh])
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 

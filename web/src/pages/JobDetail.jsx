@@ -29,7 +29,7 @@ export default function JobDetail() {
       <Link to="/jobs" className="muted small">← 回案件列表</Link>
       <h1 className="page-title">{job.title}</h1>
       <p className="page-sub">
-        <span className="tag">{CATEGORY_LABEL[job.category]}</span> 發案方：{job.client.displayName}
+        <span className="tag">{CATEGORY_LABEL[job.category]}</span> 發案方：{job.client.id ? <Link to={`/members/${job.client.id}`}>{job.client.displayName}</Link> : job.client.displayName}
         ｜刊登於 {new Date(job.createdAt).toLocaleDateString('zh-TW')}
       </p>
       <div className="grid two">

@@ -1,58 +1,75 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { creditScore, FREELANCERS, WEIGHTS } from '../engine/creditScore.js'
-
-const PART_LABEL = { onTime: '準時交付率', firstPass: '一次驗收通過率', rating: '雙方互評', dispute: '爭議紀錄' }
+import { profileApi } from '../api/client.js'
+import { useBackendStatus } from '../auth/BackendNotice.jsx'
 
 export default function Freelancers() {
-  const [open, setOpen] = useState(1)
-  const list = FREELANCERS.map((f) => ({ ...f, credit: creditScore(f) })).sort(
-    (a, b) => (b.credit.score ?? -1) - (a.credit.score ?? -1),
-  )
+  const backend = useBackendStatus()
+  const [draft, setDraft] = useState({ keyword: '', skill: '' })
+  const [filters, setFilters] = useState({ keyword: '', skill: '' })
+  const [list, setList] = useState(null)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    if (backend !== 'up') return
+    let alive = true
+    setError('')
+    profileApi.searchFreelancers(filters)
+      .then((r) => alive && setList(r))
+      .catch((e) => alive && setError(e.message))
+    return () => { alive = false }
+  }, [backend, filters])
+
+  const apply = (e) => { e.preventDefault(); setFilters({ keyword: draft.keyword.trim(), skill: draft.skill.trim() }) }
+  const bySkill = (skill) => { setDraft({ keyword: '', skill }); setFilters({ keyword: '', skill }) }
 
   return (
     <>
-      <h1 className="page-title">挑選接案者</h1>
-      <p className="page-sub">「公司形象網站」收到 {list.length} 份投標。信用分數由平台依過往交易紀錄計算，點開可看明細。</p>
-      <div className="stack">
-        {list.map((f) => (
-          <div key={f.id} className="card bidder">
-            <div className="bidder-main" onClick={() => setOpen(open === f.id ? null : f.id)}>
-              <div className={`score grade-${f.credit.grade}`}>
-                {f.credit.score ?? '—'}
-                <small>{f.credit.label}</small>
-              </div>
-              <div className="who">
-                <b>{f.name}</b>
-                <div>{f.skills.map((s) => <span key={s} className="tag">{s}</span>)}</div>
-                <div className="muted small">已完成 {f.completed} 件・平均評價 {f.ratingAvg.toFixed(1)}・爭議 {f.disputes} 件</div>
-              </div>
-              <div className="quote">
-                <span className="muted small">報價</span>
-                <b>NT$ {f.quote.toLocaleString()}</b>
-              </div>
-              <span className="chev">{open === f.id ? '▲' : '▼'}</span>
+      <h1 className="page-title">找接案者</h1>
+      <p className="page-sub">在會員中心打開「開放接案」的會員會出現在這裡，點進去看作品集。</p>
+
+      <form className="card filter-bar" onSubmit={apply}>
+        <label className="grow">關鍵字
+          <input value={draft.keyword} onChange={(e) => setDraft({ ...draft, keyword: e.target.value })} placeholder="名稱或自我介紹" />
+        </label>
+        <label>技能
+          <input value={draft.skill} onChange={(e) => setDraft({ ...draft, skill: e.target.value })} placeholder="例如：Figma" />
+        </label>
+        <div className="filter-actions">
+          <button className="btn primary">查詢</button>
+          <button type="button" className="btn ghost" onClick={() => bySkill('')}>清除</button>
+        </div>
+      </form>
+
+      {backend === 'checking' && <p className="muted">正在連線伺服器…第一次開啟最多約需 1 分鐘</p>}
+      {backend === 'down' && <div className="notice warn">目前連不到伺服器，請稍後重新整理。</div>}
+      {error && <p className="form-error">{error}</p>}
+      {backend === 'up' && !list && !error && <p className="muted">載入中…</p>}
+      {list && (list.length === 0
+        ? <p className="empty">目前沒有符合條件的接案者。到 <Link to="/account">會員中心</Link> 打開「開放接案」，你就會出現在這裡。</p>
+        : (
+          <>
+            <p className="muted small">共 {list.length} 位</p>
+            <div className="grid two">
+              {list.map((m) => (
+                <Link key={m.id} to={`/members/${m.id}`} className="card job-card">
+                  <h3>{m.displayName}</h3>
+                  {m.bio && <p className="job-desc">{m.bio}</p>}
+                  <div>
+                    {m.skills.map((s) => (
+                      <button type="button" key={s} className="tag tag-btn"
+                        onClick={(e) => { e.preventDefault(); bySkill(s) }}>{s}</button>
+                    ))}
+                  </div>
+                  <span className="muted small">作品 {m.portfolioCount} 件｜{new Date(m.createdAt).toLocaleDateString('zh-TW')} 加入</span>
+                </Link>
+              ))}
             </div>
-            {open === f.id && (
-              <div className="bidder-detail">
-                {f.credit.parts ? (
-                  Object.entries(f.credit.parts).map(([k, v]) => (
-                    <div key={k} className="bar-row">
-                      <span>{PART_LABEL[k]}</span>
-                      <div className="bar"><div style={{ width: `${(v / WEIGHTS[k]) * 100}%` }} /></div>
-                      <span className="num">{v.toFixed(1)} / {WEIGHTS[k]}</span>
-                    </div>
-                  ))
-                ) : (
-                  <p className="muted">完成案件少於 3 件，資料不足以計算信用分數。可參考作品集，或先從小型里程碑開始合作。</p>
-                )}
-                <Link to="/review" className="btn primary small">選定並產生合約草案 →</Link>
-              </div>
-            )}
-          </div>
+          </>
         ))}
-      </div>
-      <p className="muted small">計算方式：準時交付率 40%＋一次驗收通過率 30%＋雙方互評 20%＋爭議紀錄 10%（爭議率 20% 以上該項為 0）。</p>
+      <p className="muted small" style={{ marginTop: 24 }}>
+        信用評分（準時率、一次驗收率、互評）將在評價功能完成後上線，<Link to="/freelancers/score-demo">先看評分示範 →</Link>
+      </p>
     </>
   )
 }

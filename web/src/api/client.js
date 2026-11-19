@@ -46,6 +46,7 @@ export async function api(path, { method = 'GET', body, auth = true } = {}) {
   if (!res.ok) {
     throw new ApiError(res.status, data?.message ?? `伺服器錯誤（${res.status}）`, data?.errors ?? [])
   }
+  if (res.status === 204) return null
   if (!isJson) throw new ApiError(res.status, '連不到後端伺服器，請確認後端已啟動')
   return data
 }
@@ -76,4 +77,18 @@ export const jobsApi = {
   get: (id) => api(`/api/jobs/${encodeURIComponent(id)}`, { auth: false }),
   create: (job) => api('/api/jobs', { method: 'POST', body: job }),
   mine: () => api('/api/me/jobs'),
+}
+
+export const profileApi = {
+  mine: () => api('/api/me/profile'),
+  update: (profile) => api('/api/me/profile', { method: 'PUT', body: profile }),
+  addPortfolio: (item) => api('/api/me/portfolio', { method: 'POST', body: item }),
+  deletePortfolio: (id) => api(`/api/me/portfolio/${encodeURIComponent(id)}`, { method: 'DELETE' }),
+  get: (id) => api(`/api/members/${encodeURIComponent(id)}`, { auth: false }),
+  searchFreelancers: (filters = {}) => {
+    const q = new URLSearchParams()
+    for (const [k, v] of Object.entries(filters)) if (v) q.set(k, v)
+    const qs = q.toString()
+    return api(`/api/members${qs ? `?${qs}` : ''}`, { auth: false })
+  },
 }
