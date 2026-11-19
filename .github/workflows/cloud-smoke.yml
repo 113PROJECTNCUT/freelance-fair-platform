@@ -1,0 +1,38 @@
+name: Cloud smoke test
+
+# 從外部實際呼叫 Render 上的後端，確認雲端版可用（含 CORS）
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 2 * * *"   # 每天台灣時間 10:17 檢查一次
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    env:
+      API: https://freelance-fair-platform.onrender.com
+      ORIGIN: https://s845taiwan.github.io
+    steps:
+      - name: 喚醒後端（免費方案閒置會休眠，最多約 1–2 分鐘）
+        run: |
+          for i in $(seq 1 18); do
+            if curl -sf -m 20 "$API/api/health"; then echo; echo "後端已啟動"; exit 0; fi
+            sleep 10
+          done
+          echo "後端沒有回應"; exit 1
+      - name: CORS：GitHub Pages 可以呼叫
+        run: |
+          curl -s -o /dev/null -D - -X OPTIONS "$API/api/auth/login" \
+            -H "Origin: $ORIGIN" -H "Access-Control-Request-Method: POST" \
+            -H "Access-Control-Request-Headers: content-type" | tee headers.txt
+          grep -i "access-control-allow-origin: $ORIGIN" headers.txt
+      - name: 註冊 → 登入 → 取得自己 → 刊登 → 查詢
+        run: |
+          set -x
+          N=$(date +%s)
+          curl -sf -X POST "$API/api/auth/register" -H 'Content-Type: application/json' \
+            -d "{\"email\":\"smoke$N@example.com\",\"password\":\"smoke12345\",\"displayName\":\"CI 測試\",\"role\":\"CLIENT\"}"
+          TOKEN=$(curl -sf -X POST "$API/api/auth/login" -H 'Content-Type: application/json' \
+            -d "{\"email\":\"smoke$N@example.com\",\"password\":\"smoke12345\"}" | jq -r .token)
+          curl -sf "$API/api/auth/me" -H "Authorization: Bearer $TOKEN" | jq -e '.role == "CLIENT"'
+          curl -sf "$API/api/jobs" | jq -e 'type == "array"'

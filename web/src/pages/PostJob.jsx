@@ -92,7 +92,7 @@ export default function PostJob() {
     <>
       <h1 className="page-title">刊登案件</h1>
       <p className="page-sub">寫清楚預算、修改次數與權利歸屬，系統幫你把需求轉成驗收清單，簽約前先跟接案者對齊。</p>
-      {backend === 'down' && <div className="notice warn">後端未連線：可以試用驗收清單產生，但無法正式刊登。</div>}
+      {backend === 'down' && <div className="notice warn">目前連不到伺服器：可以試用驗收清單產生，但無法正式刊登。</div>}
       {backend === 'up' && !user && <div className="notice warn">要正式刊登，請先 <Link to="/login">以發案方身分登入</Link>。</div>}
       {backend === 'up' && user && user.role !== 'CLIENT' && <div className="notice warn">你目前是接案者帳號，只有發案方可以刊登案件。</div>}
 

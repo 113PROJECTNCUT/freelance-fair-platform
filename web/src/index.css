@@ -160,7 +160,7 @@ input:focus, textarea:focus { outline: 2px solid #bcdcf5; background: #fff; }
 .role-pick input { position: absolute; opacity: 0; pointer-events: none; }
 .role-pick span { font-weight: 400; font-size: 13px; color: var(--grey); }
 .form-error { color: var(--red); font-weight: 500; font-size: 13px; margin: 0; }
-.notice { border-radius: 9px; padding: 10px 14px; margin-bottom: 14px; font-size: 14px; line-height: 1.55; }
+.notice { background: #eef6fd; border: 1px solid #aed3f0; border-radius: 9px; padding: 10px 14px; margin-bottom: 14px; font-size: 14px; line-height: 1.55; }
 .notice.warn { background: #fef5e7; border: 1px solid #f5cf8e; }
 .notice.ok { background: #eafaf1; border: 1px solid #a9dfbf; }
 .kv { display: grid; grid-template-columns: 90px 1fr; gap: 10px 12px; margin: 0 0 20px; }

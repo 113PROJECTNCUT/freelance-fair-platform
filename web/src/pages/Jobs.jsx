@@ -53,7 +53,7 @@ export default function Jobs() {
       <h1 className="page-title">找案件</h1>
       <p className="page-sub">每個案件都先寫清楚預算、修改次數、權利歸屬與驗收標準，應徵前就知道要做到什麼。</p>
       {backend === 'down' && (
-        <div className="notice warn">後端未連線，以下為<strong>示範資料</strong>。在本機啟動後端即可看到真實刊登的案件。</div>
+        <div className="notice warn">目前連不到伺服器，以下為<strong>示範資料</strong>。</div>
       )}
 
       <form className="card filter-bar" onSubmit={apply}>
@@ -79,7 +79,7 @@ export default function Jobs() {
       </form>
 
       {error && <p className="form-error">{error}</p>}
-      {!jobs ? <p className="muted">載入中…</p>
+      {!jobs ? <p className="muted">{backend === 'checking' ? '正在連線伺服器…第一次開啟最多約需 1 分鐘' : '載入中…'}</p>
         : jobs.length === 0 ? <p className="empty">沒有符合條件的案件。</p>
         : (
           <>

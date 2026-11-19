@@ -30,6 +30,9 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run build
+        env:
+          # 雲端後端（Render）
+          VITE_API_BASE: https://freelance-fair-platform.onrender.com
       - uses: actions/upload-pages-artifact@v3
         with:
           path: web/dist
